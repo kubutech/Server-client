@@ -5,8 +5,8 @@ import java.io.*;
 public class Client {
     
     private Socket connectSocket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private OutputStream out;
+    private InputStream in;
     private int port = 1999;
     byte[] recvbuf = new byte[2048];
 
@@ -22,8 +22,8 @@ public class Client {
             return 1;
         }
         try {
-            out = new PrintWriter(connectSocket.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(connectSocket.getInputStream()));
+            out = connectSocket.getOutputStream();
+            in = connectSocket.getInputStream();
         } catch (Exception e) {System.out.println("Error");}
         System.out.println(connectSocket.isConnected());
         return 0;
@@ -61,11 +61,10 @@ public class Client {
             unsignedByte[i] = sendbuf[i] & 0xff;
             System.out.println(unsignedByte[i]);
         }
-
-        out.write("LIST FILES");
+        try {
+        out.write(sendbuf);
         out.flush();
-
-        
+        }catch (Exception e){}
         
         System.out.println(size);
         System.out.println(connectSocket.isConnected());
