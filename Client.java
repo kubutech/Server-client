@@ -1,4 +1,5 @@
 import java.net.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.io.*;
 
@@ -7,7 +8,7 @@ public class Client {
     private Socket connectSocket;
     private OutputStream out;
     private InputStream in;
-    private int port = 1999;
+    private int port = 2014;
     byte[] recvbuf = new byte[2048];
 
     public Client() {
@@ -17,7 +18,7 @@ public class Client {
     public int startConnection(String ip) {
         try {
             connectSocket = new Socket(ip, this.port);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Couldn't connect to Server on provided addrress");
             return 1;
         }
@@ -51,22 +52,35 @@ public class Client {
         }
     }
 
-    public void ListFiles() {
+    public void listFiles() {
         System.out.println(connectSocket.isConnected());
-        String message = "";
+        String message = "LIST FILES";
         byte[] sendbuf = message.getBytes(StandardCharsets.UTF_16LE);
         int size = sendbuf.length;
-        int[] unsignedByte = new int[sendbuf.length];
-        for (int i = 0; i < sendbuf.length; i++) {
-            unsignedByte[i] = sendbuf[i] & 0xff;
-            System.out.println(unsignedByte[i]);
-        }
         try {
-        out.write(sendbuf);
-        out.flush();
+            out.write(sendbuf);
+            out.flush();
         }catch (Exception e){}
         
         System.out.println(size);
+        System.out.println(connectSocket.isConnected());
+    }
+
+    @Deprecated
+    public void testConnection() {
+        System.out.println(connectSocket.isConnected());
+        String message = "Łąkaӽ";
+        byte[] sendbuf = message.getBytes(Charset.forName("UTF_16LE"));
+        try {
+            out.write(sendbuf);
+            out.flush();
+        }catch (Exception e){}
+        try {
+            byte[] recvbuf = in.readAllBytes();
+            for (int i = 0; i < recvbuf.length; i++) {
+                System.out.println(recvbuf[i]);
+            }
+        } catch (IOException e) {}
         System.out.println(connectSocket.isConnected());
     }
 }
