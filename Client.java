@@ -22,6 +22,8 @@ public class Client {
         window.send.addActionListener(e -> {
             if (e.getActionCommand().equals("Connect")) {
                 this.startConnection();
+            } else if (e.getActionCommand().equals("Send command")) {
+                this.sendCommand();
             }
         });
     }
@@ -83,7 +85,9 @@ public class Client {
 
             this.files = getFiles(reply);
 
-        } catch (Exception e){}
+        } catch (Exception e){
+            this.window.status.setText("Connection with server interrupted- restart application to connect again!");
+        }
         
         window.model.updateList(this.files);
 
@@ -104,6 +108,15 @@ public class Client {
         }
         System.out.println(files.size());
         return files;
+    }
+
+    public void sendCommand() {
+        String command = this.window.input.getText();
+        byte[] sendbuf = command.getBytes();
+        try {
+            out.write(sendbuf);
+            out.flush();
+        } catch (Exception e){}
     }
 
     @Deprecated
