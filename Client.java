@@ -9,9 +9,8 @@ public class Client {
     
     private Socket connectSocket;
     private OutputStream out;
+    private FileOutputStream fileOut;
     private InputStream in;
-    private BufferedWriter fileOut;
-    private BufferedReader fileIn;
     private int port = 1999;
     private String IP = " ";
     ArrayList<File> files = new ArrayList<File>();
@@ -20,9 +19,9 @@ public class Client {
     public Client() {
         this.window = new Window();
         try {
-            fileIn = new BufferedReader(new FileReader("IPAddress.txt"));
-            window.input.setText(fileIn.readLine());
-            fileIn.close();
+            BufferedReader dataIn = new BufferedReader(new FileReader("IPAddress.txt"));
+            window.input.setText(dataIn.readLine());
+            dataIn.close();
         } catch (IOException e) {}
         window.send.setText("Connect");
         window.status.setText("Enter IP to connect");
@@ -48,13 +47,22 @@ public class Client {
             window.refresh.addActionListener(e -> {
                 this.updateList();
             });
+            window.download.addActionListener(e -> {
+                try {
+                    this.downloadFile(this.files.get(window.table.getSelectedRow()));
+                    window.status.setText("Downladed file!");
+                } catch (IOException f) {
+                    window.status.setText("couldn't download file!");
+                }
+            });
             window.send.setText("Send command");
             try {
-                fileOut = new BufferedWriter(new FileWriter("IPAddress.txt"));
+                BufferedWriter fileOut = new BufferedWriter(new FileWriter("IPAddress.txt"));
                 fileOut.write(this.IP);
                 fileOut.flush();
                 fileOut.close();
             } catch (IOException e) {}
+            window.input.setText("");
         } catch (Exception e) {
             window.status.setText("Couldn't connect to Server on provided addrress");
         }
@@ -149,6 +157,36 @@ public class Client {
         } catch (IOException e) {}
         System.out.println(connectSocket.isConnected());
     }
+
+    public void downloadFile (File file) throws IOException {
+
+        byte[] sendbuf = ("GET " + file.name).getBytes(StandardCharsets.UTF_16LE);
+        byte[] recvbuf = new byte[2048];
+        
+        out.write(sendbuf);
+        out.flush();
+
+        in.read(recvbuf);
+        String reply = new String(recvbuf,"UTF-16LE");
+        //if (reply.equals("Sending FILE " + file.name)) {
+            fileOut = new FileOutputStream(file.name);
+            System.out.println(reply);
+            int recvSize;
+            while (true) {
+                Arrays.fill((byte[])recvbuf,(byte)0);
+                recvSize = in.read(recvbuf);
+                if (recvSize == 0 || recvSize == 1 || recvSize == -1) {
+                    break;
+                }
+                fileOut.write(recvbuf);
+                fileOut.flush();
+            }
+            System.out.println("After");
+            fileOut.close();
+        //}
+
+    }
+
 }
 
 class File {

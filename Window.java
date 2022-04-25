@@ -1,17 +1,17 @@
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-
-
 import java.awt.*;
 import java.util.*;
+
 
 
 public class Window {
     
     JFrame frame;
-    JPanel panel;
-    JButton refresh;
-    JButton send;
+    JPanel panelTop, panelBottom;
+    JButton refresh, send, download;
     JTextArea status;
     JTextField input;
     JTable table;
@@ -21,29 +21,46 @@ public class Window {
     public Window() {
         frame = new JFrame("Server client"); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        panel = new JPanel(new BorderLayout());
+        panelTop = new JPanel(new BorderLayout());
+        panelBottom = new JPanel(new BorderLayout());
         refresh = new JButton("Refresh List");
+        download = new JButton("Download selection");
         status = new JTextArea();
         input = new JTextField();
         send = new JButton("Send command");
         model = new myTableModel();
         table = new JTable(model);
 
+        ListSelectionListener a = new ListSelectionListener() {
+            
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                status.setText(String.valueOf(table.getSelectedRow()));
+            }
+
+        };
+
+
         table.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("File Number");
         table.getTableHeader().getColumnModel().getColumn(1).setHeaderValue("File Name");
         table.getTableHeader().getColumnModel().getColumn(2).setHeaderValue("File Size");
+        table.setCellSelectionEnabled(true);
+        table.getColumnModel().getSelectionModel().addListSelectionListener(a);
 
-        panel.add(input);
-        panel.add(BorderLayout.EAST,send);
-        panel.add(BorderLayout.AFTER_LAST_LINE,refresh);
+
+        panelTop.add(input);
+        panelTop.add(BorderLayout.EAST,send);
+        panelTop.add(BorderLayout.NORTH,status);
+        panelBottom.add(BorderLayout.WEST,refresh);
+        panelBottom.add(BorderLayout.EAST, download);
         
         status.setText("Welcome to Server");
         status.setEditable(false);
 
         frame.setSize(500, 400);
         frame.setLocationRelativeTo(null);
-        frame.getContentPane().add(BorderLayout.SOUTH, panel);
-        frame.getContentPane().add(BorderLayout.NORTH, status);
+        frame.getContentPane().add(BorderLayout.SOUTH, panelBottom);
+        frame.getContentPane().add(BorderLayout.NORTH, panelTop);
         frame.add(new JScrollPane(table));
         frame.setVisible(true);
         
@@ -93,3 +110,5 @@ class myTableModel  extends AbstractTableModel {
         this.files = files;
     }
 }
+
+
