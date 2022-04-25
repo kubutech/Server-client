@@ -2,24 +2,29 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.io.*;
+import javax.swing.*;
+import java.util.*;
 
 public class Client {
     
     private Socket connectSocket;
     private OutputStream out;
     private InputStream in;
-    private int port = 2014;
-    byte[] recvbuf = new byte[2048];
+    private int port = 1999;
+    private String IP = " ";
+    ArrayList<File> files = new ArrayList<File>();
+    Window window;
 
     public Client() {
-
+        this.window = new Window();
+        window.refresh.addActionListener(e -> this.updateList());
     }
 
     public int startConnection(String ip) {
         try {
             connectSocket = new Socket(ip, this.port);
         } catch (Exception e) {
-            System.out.println("Couldn't connect to Server on provided addrress");
+            window.status.setText("Couldn't connect to Server on provided addrress");
             return 1;
         }
         try {
@@ -52,18 +57,43 @@ public class Client {
         }
     }
 
-    public void listFiles() {
-        System.out.println(connectSocket.isConnected());
+    public void updateList() {
+        this.files.clear();
         String message = "LIST FILES";
         byte[] sendbuf = message.getBytes(StandardCharsets.UTF_16LE);
-        int size = sendbuf.length;
+        byte[] recvbuf = new byte[2048];
         try {
             out.write(sendbuf);
             out.flush();
-        }catch (Exception e){}
+            in.read(recvbuf);
+            
+            System.out.println(recvbuf.length);
+
+            String reply = new String(recvbuf,"UTF-16LE");
+
+            this.files = getFiles(reply);
+
+        } catch (Exception e){}
         
-        System.out.println(size);
-        System.out.println(connectSocket.isConnected());
+        window.model.updateList(this.files);
+
+        window.table.repaint();
+
+    }
+
+    ArrayList<File> getFiles(String message) {
+        
+        ArrayList<File> files = new ArrayList<File>();
+        String[] rows = message.split("\n");
+        for(String file : rows) {
+            if (!file.contains("\t")) {
+                continue;
+            }
+            String [] column = file.split("\t");
+            files.add(new File(column[0], Long.parseLong(column[1])));
+        }
+        System.out.println(files.size());
+        return files;
     }
 
     @Deprecated
@@ -82,5 +112,16 @@ public class Client {
             }
         } catch (IOException e) {}
         System.out.println(connectSocket.isConnected());
+    }
+}
+
+class File {
+
+    String name;
+    long size;
+
+    public File(String name, long size) {
+        this.name = name;
+        this.size = size;
     }
 }
