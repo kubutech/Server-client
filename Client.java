@@ -10,6 +10,8 @@ public class Client {
     private Socket connectSocket;
     private OutputStream out;
     private InputStream in;
+    private BufferedWriter fileOut;
+    private BufferedReader fileIn;
     private int port = 1999;
     private String IP = " ";
     ArrayList<File> files = new ArrayList<File>();
@@ -17,6 +19,11 @@ public class Client {
 
     public Client() {
         this.window = new Window();
+        try {
+            fileIn = new BufferedReader(new FileReader("IPAddress.txt"));
+            window.input.setText(fileIn.readLine());
+            fileIn.close();
+        } catch (IOException e) {}
         window.send.setText("Connect");
         window.status.setText("Enter IP to connect");
         window.send.addActionListener(e -> {
@@ -42,6 +49,12 @@ public class Client {
                 this.updateList();
             });
             window.send.setText("Send command");
+            try {
+                fileOut = new BufferedWriter(new FileWriter("IPAddress.txt"));
+                fileOut.write(this.IP);
+                fileOut.flush();
+                fileOut.close();
+            } catch (IOException e) {}
         } catch (Exception e) {
             window.status.setText("Couldn't connect to Server on provided addrress");
         }
