@@ -17,22 +17,32 @@ public class Client {
 
     public Client() {
         this.window = new Window();
-        window.refresh.addActionListener(e -> this.updateList());
+        window.send.setText("Connect");
+        window.status.setText("Enter IP to connect");
+        window.send.addActionListener(e -> {
+            if (e.getActionCommand().equals("Connect")) {
+                this.startConnection();
+            }
+        });
     }
 
-    public int startConnection(String ip) {
+    public void startConnection() {
+        this.IP = window.input.getText();
         try {
-            connectSocket = new Socket(ip, this.port);
+            connectSocket = new Socket(this.IP, this.port);
+            try {
+                out = connectSocket.getOutputStream();
+                in = connectSocket.getInputStream();
+            } catch (Exception e) {System.out.println("Error");}
+            window.status.setText("Connected succefully!");
+            this.updateList();
+            window.refresh.addActionListener(e -> {
+                this.updateList();
+            });
+            window.send.setText("Send command");
         } catch (Exception e) {
             window.status.setText("Couldn't connect to Server on provided addrress");
-            return 1;
         }
-        try {
-            out = connectSocket.getOutputStream();
-            in = connectSocket.getInputStream();
-        } catch (Exception e) {System.out.println("Error");}
-        System.out.println(connectSocket.isConnected());
-        return 0;
     }
 
     public void stopConnection() {
