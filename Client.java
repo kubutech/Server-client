@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -7,8 +8,9 @@ import java.util.*;
 public class Client {
     
     private Socket connectSocket;
-    private OutputStream out;
+    private OutputStream out, uploadOut;
     private FileOutputStream fileOut;
+    private FileInputStream fileIn;
     private InputStream in;
     private int port = 1999;
     private String IP = " ";
@@ -44,31 +46,46 @@ public class Client {
                 out = connectSocket.getOutputStream();
                 in = connectSocket.getInputStream();
             } catch (Exception e) {System.out.println("Error");}
-            window.status.setText("Connected succefully!");
+            window.status.setText("Connected successfully!");
             this.updateList();
 
-            window.refresh.addActionListener(e -> {
+            window.refresh.addActionListener(a -> {
                 this.updateList();
             });
 
-            window.download.addActionListener(e -> {
-                RemoteFile dFile = this.files.get(window.table.getSelectedRow());
+            window.download.addActionListener(a -> {
+                RemoteFile dFile;
                 try {
+                    dFile = this.files.get(window.table.getSelectedRow());
                     window.status.setText("Downloading file " + dFile.name);
                     this.downloadFile(dFile);
-                    window.status.setText("Downladed file " + dFile.name);
-                } catch (IOException f) {
-                    if (f.getMessage().equals("Read timed out")) {
+                    window.status.setText("Downloaded file " + dFile.name);
+                } catch (IOException e) {
+                    if (e.getMessage().equals("Read timed out")) {
+                        dFile = this.files.get(window.table.getSelectedRow());
                         window.status.setText("Downladed file " + dFile.name);
                     }
-                } catch (IndexOutOfBoundsException f) {
+                } catch (IndexOutOfBoundsException e) {
                     window.status.setText("Select file to download!");
                 }
             });
 
-            window.restart.addActionListener(e -> {
+            window.restart.addActionListener(a -> {
                 if (!this.isClosed) {
                     this.isClosed = true;
+                }
+            });
+
+            window.menuItem.addActionListener(a -> {
+                int result = window.fc.showOpenDialog(window.frame);
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = window.fc.getSelectedFile();
+                    try {
+                        uploadFile(selectedFile);
+                    } catch (Exception e) {
+
+                    }
                 }
             });
 
@@ -120,8 +137,6 @@ public class Client {
             out.write(sendbuf);
             out.flush();
             in.read(recvbuf);
-            
-            System.out.println(recvbuf.length);
 
             String reply = new String(recvbuf,"UTF-16LE");
 
@@ -129,8 +144,9 @@ public class Client {
 
         } catch (Exception e){
             this.window.status.setText("Connection with server interrupted- restart application to connect again!");
+            e.printStackTrace();
         }
-        
+
         window.model.updateList(this.files);
 
         window.sp.revalidate();
@@ -149,7 +165,6 @@ public class Client {
             String [] column = file.split("\t");
             files.add(new RemoteFile(column[0], Long.parseLong(column[1])));
         }
-        System.out.println(files.size());
         return files;
     }
 
@@ -198,7 +213,7 @@ public class Client {
             System.out.println(reply);
             int recvSize = 0;
             while (true) {
-                Arrays.fill((byte[])recvbuf,(byte)0);
+                Arrays.fill(recvbuf, (byte)0);
                 try {
                     recvSize = in.read(recvbuf, 0, 2048);
                 } catch(IOException e) {
@@ -216,6 +231,27 @@ public class Client {
             throw new IOException("File not available on server");
         }
 
+    }
+
+    public void uploadFile(File file) throws Exception {
+        fileIn = new FileInputStream(file);
+        byte[] sendbuf = new byte[2048];
+        sendbuf = ("PUSH " + file.getName()).getBytes(StandardCharsets.UTF_16LE);
+        out.write(sendbuf);
+        out.flush();
+        int readSize;
+        while (true) {
+            Arrays.fill(sendbuf, (byte) 0);
+            readSize = fileIn.read(sendbuf);
+            if (readSize <= 0) {
+                break;
+            }
+            out.write(sendbuf);
+            out.flush();
+        }
+        out.write(0);
+        fileIn.close();
+        this.updateList();
     }
 
 }

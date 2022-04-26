@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.*;
 
 
@@ -15,7 +17,10 @@ public class Window {
     JTextField input;
     JTable table;
     myTableModel model;
-
+    JFileChooser fc;
+    JMenuBar menubar;
+    JMenu menu;
+    JMenuItem menuItem;
 
     public Window() {
         frame = new JFrame("Server client"); 
@@ -30,8 +35,17 @@ public class Window {
         input = new JTextField();
         model = new myTableModel();
         table = new JTable(model);
+        fc = new JFileChooser();
+        menu = new JMenu("File");
+        menubar = new JMenuBar();
+        menuItem = new JMenuItem("Upload", KeyEvent.VK_T);
 
+        fc.setApproveButtonText("Upload");
 
+        menu.setMnemonic(KeyEvent.VK_A);
+        menubar.add(menu);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, ActionEvent.CTRL_MASK));
+        menu.add(menuItem);
 
         table.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("File Number");
         table.getTableHeader().getColumnModel().getColumn(1).setHeaderValue("File Name");
@@ -54,7 +68,9 @@ public class Window {
         frame.getContentPane().add(BorderLayout.NORTH, panelTop);
         sp = new JScrollPane(table);
         frame.add(sp);
+        frame.setJMenuBar(menubar);
         frame.setVisible(true);
+
         
     }
 
