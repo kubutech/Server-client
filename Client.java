@@ -25,6 +25,7 @@ public class Client {
         } catch (IOException e) {}
         window.send.setText("Connect");
         window.status.setText("Enter IP to connect");
+        this.startConnection();
         window.send.addActionListener(e -> {
             if (e.getActionCommand().equals("Connect")) {
                 this.startConnection();
@@ -49,13 +50,20 @@ public class Client {
             });
             window.download.addActionListener(e -> {
                 try {
-                    this.downloadFile(this.files.get(window.table.getSelectedRow()));
-                    window.status.setText("Downladed file!");
+                    File dFile = this.files.get(window.table.getSelectedRow());
+                    window.status.setText("Downloading file " + dFile.name);
+                    this.downloadFile(dFile);
+                    window.status.setText("Downladed file " + dFile.name);
                 } catch (IOException f) {
-                    window.status.setText("couldn't download file!");
+                    window.status.setText("Couldn't download file!");
+                } catch (IndexOutOfBoundsException f) {
+                    window.status.setText("Select file to download!");
                 }
             });
             window.send.setText("Send command");
+            window.input.setText("");
+            window.sp.revalidate();
+            window.sp.repaint();
             try {
                 BufferedWriter fileOut = new BufferedWriter(new FileWriter("IPAddress.txt"));
                 fileOut.write(this.IP);
@@ -167,20 +175,27 @@ public class Client {
 
         in.read(recvbuf);
         String reply = new String(recvbuf,"UTF-16LE");
-        if (reply.equals("Sending FILE " + file.name)) {
+
+        String error = reply.substring(0,17);
+
+        if (!error.equals("File doesnt exist")) {
             fileOut = new FileOutputStream(file.name);
             System.out.println(reply);
             int recvSize;
             while (true) {
                 Arrays.fill((byte[])recvbuf,(byte)0);
                 recvSize = in.read(recvbuf);
+                System.out.println(recvSize);
                 if (recvSize == 0 || recvSize == 1 || recvSize == -1) {
                     break;
                 }
-                fileOut.write(recvbuf);
+                fileOut.write(recvbuf, 0, recvSize);
                 fileOut.flush();
             }
             fileOut.close();
+            System.out.println("Done");
+        } else {
+            throw new IOException("File not available on server");
         }
 
     }

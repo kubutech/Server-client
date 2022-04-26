@@ -12,6 +12,7 @@ public class Window {
     JFrame frame;
     JPanel panelTop, panelBottom;
     JButton refresh, send, download;
+    JScrollPane sp;
     JTextArea status;
     JTextField input;
     JTable table;
@@ -52,7 +53,8 @@ public class Window {
         frame.setLocationRelativeTo(null);
         frame.getContentPane().add(BorderLayout.SOUTH, panelBottom);
         frame.getContentPane().add(BorderLayout.NORTH, panelTop);
-        frame.add(new JScrollPane(table));
+        sp = new JScrollPane(table);
+        frame.add(sp);
         frame.setVisible(true);
         
     }
