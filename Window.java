@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.*;
@@ -11,7 +9,7 @@ public class Window {
     
     JFrame frame;
     JPanel panelTop, panelBottom;
-    JButton refresh, send, download;
+    JButton refresh, send, download, restart;
     JScrollPane sp;
     JTextArea status;
     JTextField input;
@@ -26,9 +24,10 @@ public class Window {
         panelBottom = new JPanel(new BorderLayout());
         refresh = new JButton("Refresh List");
         download = new JButton("Download selection");
+        send = new JButton("Send command");
+        restart = new JButton("Restart connection");
         status = new JTextArea();
         input = new JTextField();
-        send = new JButton("Send command");
         model = new myTableModel();
         table = new JTable(model);
 
@@ -39,12 +38,12 @@ public class Window {
         table.getTableHeader().getColumnModel().getColumn(2).setHeaderValue("File Size");
         table.setCellSelectionEnabled(true);
 
-
         panelTop.add(input);
         panelTop.add(BorderLayout.EAST,send);
         panelTop.add(BorderLayout.NORTH,status);
         panelBottom.add(BorderLayout.WEST,refresh);
-        panelBottom.add(BorderLayout.EAST, download);
+        panelBottom.add(BorderLayout.CENTER, download);
+        panelBottom.add(BorderLayout.EAST,restart);
         
         status.setText("Welcome to Server");
         status.setEditable(false);

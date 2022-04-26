@@ -2,7 +2,6 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.io.*;
-import javax.swing.*;
 import java.util.*;
 
 public class Client {
@@ -13,6 +12,7 @@ public class Client {
     private InputStream in;
     private int port = 1999;
     private String IP = " ";
+    public boolean isClosed = false;
     ArrayList<File> files = new ArrayList<File>();
     Window window;
 
@@ -45,9 +45,11 @@ public class Client {
             } catch (Exception e) {System.out.println("Error");}
             window.status.setText("Connected succefully!");
             this.updateList();
+
             window.refresh.addActionListener(e -> {
                 this.updateList();
             });
+
             window.download.addActionListener(e -> {
                 try {
                     File dFile = this.files.get(window.table.getSelectedRow());
@@ -60,6 +62,13 @@ public class Client {
                     window.status.setText("Select file to download!");
                 }
             });
+
+            window.restart.addActionListener(e -> {
+                if (!this.isClosed) {
+                    this.isClosed = true;
+                }
+            });
+
             window.send.setText("Send command");
             window.input.setText("");
             window.sp.revalidate();
@@ -95,6 +104,8 @@ public class Client {
         } catch (Exception e) {
             System.out.println("Error socket");
         }
+
+        window.frame.dispose();
     }
 
     public void updateList() {
@@ -119,7 +130,8 @@ public class Client {
         
         window.model.updateList(this.files);
 
-        window.table.repaint();
+        window.sp.revalidate();
+        window.sp.repaint();
 
     }
 
