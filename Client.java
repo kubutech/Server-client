@@ -39,6 +39,7 @@ public class Client {
         this.IP = window.input.getText();
         try {
             connectSocket = new Socket(this.IP, this.port);
+            connectSocket.setSoTimeout(500);
             try {
                 out = connectSocket.getOutputStream();
                 in = connectSocket.getInputStream();
@@ -51,13 +52,15 @@ public class Client {
             });
 
             window.download.addActionListener(e -> {
+                File dFile = this.files.get(window.table.getSelectedRow());
                 try {
-                    File dFile = this.files.get(window.table.getSelectedRow());
                     window.status.setText("Downloading file " + dFile.name);
                     this.downloadFile(dFile);
                     window.status.setText("Downladed file " + dFile.name);
                 } catch (IOException f) {
-                    window.status.setText("Couldn't download file!");
+                    if (f.getMessage().equals("Read timed out")) {
+                        window.status.setText("Downladed file " + dFile.name);
+                    }
                 } catch (IndexOutOfBoundsException f) {
                     window.status.setText("Select file to download!");
                 }
@@ -193,19 +196,23 @@ public class Client {
         if (!error.equals("File doesnt exist")) {
             fileOut = new FileOutputStream(file.name);
             System.out.println(reply);
-            int recvSize;
+            int recvSize = 0;
             while (true) {
                 Arrays.fill((byte[])recvbuf,(byte)0);
-                recvSize = in.read(recvbuf);
-                System.out.println(recvSize);
+                try {
+                    recvSize = in.read(recvbuf, 0, 2048);
+                } catch(IOException e) {
+                    System.out.println("Receive timeout!");
+                    break;
+                }
                 if (recvSize == 0 || recvSize == 1 || recvSize == -1) {
                     break;
                 }
+                window.status.setText(String.valueOf(recvSize));
                 fileOut.write(recvbuf, 0, recvSize);
                 fileOut.flush();
             }
             fileOut.close();
-            System.out.println("Done");
         } else {
             throw new IOException("File not available on server");
         }
