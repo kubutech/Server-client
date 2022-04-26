@@ -63,7 +63,7 @@ public class Window {
 class myTableModel  extends AbstractTableModel {
 
 
-    private ArrayList<File> files = new ArrayList<File>();
+    private ArrayList<RemoteFile> files = new ArrayList<RemoteFile>();
 
     public int getColumnCount() {
 
@@ -97,7 +97,7 @@ class myTableModel  extends AbstractTableModel {
         }
     }
     
-    public void updateList(ArrayList<File> files) {
+    public void updateList(ArrayList<RemoteFile> files) {
         
         this.files = files;
     }

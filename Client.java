@@ -13,7 +13,7 @@ public class Client {
     private int port = 1999;
     private String IP = " ";
     public boolean isClosed = false;
-    ArrayList<File> files = new ArrayList<File>();
+    ArrayList<RemoteFile> files = new ArrayList<RemoteFile>();
     Window window;
 
     public Client() {
@@ -52,7 +52,7 @@ public class Client {
             });
 
             window.download.addActionListener(e -> {
-                File dFile = this.files.get(window.table.getSelectedRow());
+                RemoteFile dFile = this.files.get(window.table.getSelectedRow());
                 try {
                     window.status.setText("Downloading file " + dFile.name);
                     this.downloadFile(dFile);
@@ -138,16 +138,16 @@ public class Client {
 
     }
 
-    ArrayList<File> getFiles(String message) {
+    ArrayList<RemoteFile> getFiles(String message) {
         
-        ArrayList<File> files = new ArrayList<File>();
+        ArrayList<RemoteFile> files = new ArrayList<RemoteFile>();
         String[] rows = message.split("\n");
         for(String file : rows) {
             if (!file.contains("\t")) {
                 continue;
             }
             String [] column = file.split("\t");
-            files.add(new File(column[0], Long.parseLong(column[1])));
+            files.add(new RemoteFile(column[0], Long.parseLong(column[1])));
         }
         System.out.println(files.size());
         return files;
@@ -180,7 +180,7 @@ public class Client {
         System.out.println(connectSocket.isConnected());
     }*/
 
-    public void downloadFile (File file) throws IOException {
+    public void downloadFile (RemoteFile file) throws IOException {
 
         byte[] sendbuf = ("GET " + file.name).getBytes(StandardCharsets.UTF_16LE);
         byte[] recvbuf = new byte[2048];
@@ -220,12 +220,12 @@ public class Client {
 
 }
 
-class File {
+class RemoteFile {
 
     String name;
     long size;
 
-    public File(String name, long size) {
+    public RemoteFile(String name, long size) {
         this.name = name;
         this.size = size;
     }
