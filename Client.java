@@ -159,7 +159,7 @@ public class Client {
         } catch (Exception e) {}
     }
 
-    @Deprecated
+    /*@Deprecated
     public void testConnection() {
         System.out.println(connectSocket.isConnected());
         String message = "Łąkaӽ";
@@ -169,13 +169,13 @@ public class Client {
             out.flush();
         }catch (Exception e){}
         try {
-            byte[] recvbuf = in.readAllBytes();
+            byte[] recvbuf = in.read();
             for (int i = 0; i < recvbuf.length; i++) {
                 System.out.println(recvbuf[i]);
             }
         } catch (IOException e) {}
         System.out.println(connectSocket.isConnected());
-    }
+    }*/
 
     public void downloadFile (File file) throws IOException {
 
