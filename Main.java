@@ -13,7 +13,6 @@ public class Main {
             }
             try {
                 Thread.sleep(2000);
-                client.updateList();
             } catch (Exception e) {}
         }
         
