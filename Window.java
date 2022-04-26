@@ -31,21 +31,12 @@ public class Window {
         model = new myTableModel();
         table = new JTable(model);
 
-        ListSelectionListener a = new ListSelectionListener() {
-            
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                status.setText(String.valueOf(table.getSelectedRow()));
-            }
-
-        };
 
 
         table.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("File Number");
         table.getTableHeader().getColumnModel().getColumn(1).setHeaderValue("File Name");
         table.getTableHeader().getColumnModel().getColumn(2).setHeaderValue("File Size");
         table.setCellSelectionEnabled(true);
-        table.getColumnModel().getSelectionModel().addListSelectionListener(a);
 
 
         panelTop.add(input);

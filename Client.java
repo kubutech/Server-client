@@ -62,7 +62,6 @@ public class Client {
                 fileOut.flush();
                 fileOut.close();
             } catch (IOException e) {}
-            window.input.setText("");
         } catch (Exception e) {
             window.status.setText("Couldn't connect to Server on provided addrress");
         }
@@ -137,7 +136,7 @@ public class Client {
         try {
             out.write(sendbuf);
             out.flush();
-        } catch (Exception e){}
+        } catch (Exception e) {}
     }
 
     @Deprecated
@@ -168,7 +167,7 @@ public class Client {
 
         in.read(recvbuf);
         String reply = new String(recvbuf,"UTF-16LE");
-        //if (reply.equals("Sending FILE " + file.name)) {
+        if (reply.equals("Sending FILE " + file.name)) {
             fileOut = new FileOutputStream(file.name);
             System.out.println(reply);
             int recvSize;
@@ -181,9 +180,8 @@ public class Client {
                 fileOut.write(recvbuf);
                 fileOut.flush();
             }
-            System.out.println("After");
             fileOut.close();
-        //}
+        }
 
     }
 
