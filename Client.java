@@ -208,7 +208,6 @@ public class Client {
                 if (recvSize == 0 || recvSize == 1 || recvSize == -1) {
                     break;
                 }
-                window.status.setText(String.valueOf(recvSize));
                 fileOut.write(recvbuf, 0, recvSize);
                 fileOut.flush();
             }
