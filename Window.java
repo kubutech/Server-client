@@ -105,13 +105,13 @@ class myTableModel  extends AbstractTableModel {
                 return files.get(row).size + " B";
             }
             else if (files.get(row).size < 512 * 1024) {
-                return (float)files.get(row).size / 1024 + " KB";
+                return String.format("%.1f" ,(float)files.get(row).size / 1024) + " KB";
             }
             else if (files.get(row).size < 512 * 1024 * 1024) {
-                return (float)files.get(row).size / (1024 * 1024) + " MB";
+                return String.format("%.1f" ,(float)files.get(row).size / (1024 * 1024)) + " MB";
             }
             else {
-                return (float)files.get(row).size / (1024 * 1024 * 1024) + " GB";
+                return String.format("%.1f" ,(float)files.get(row).size / (1024 * 1024 * 1024)) + " GB";
             }
         } else {
             return row + 1;
