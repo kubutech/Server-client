@@ -11,7 +11,7 @@ public class Window {
     
     JFrame frame;
     JPanel panelTop, panelBottom;
-    JButton refresh, send, download, restart;
+    JButton send, download, upload;
     JScrollPane sp;
     JTextArea status;
     JTextField input;
@@ -20,32 +20,34 @@ public class Window {
     JFileChooser fc;
     JMenuBar menubar;
     JMenu menu;
-    JMenuItem menuItem;
+    JMenuItem refresh, restart;
 
     public Window() {
         frame = new JFrame("Server client"); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         panelTop = new JPanel(new BorderLayout());
         panelBottom = new JPanel(new BorderLayout());
-        refresh = new JButton("Refresh List");
+        refresh = new JMenuItem("Refresh List");
         download = new JButton("Download selection");
         send = new JButton("Send command");
-        restart = new JButton("Restart connection");
+        upload = new JButton("Upload");
+        restart = new JMenuItem("Restart connection");
         status = new JTextArea();
         input = new JTextField();
         model = new myTableModel();
         table = new JTable(model);
         fc = new JFileChooser();
-        menu = new JMenu("File");
+        menu = new JMenu("Connection");
         menubar = new JMenuBar();
-        menuItem = new JMenuItem("Upload", KeyEvent.VK_T);
 
         fc.setApproveButtonText("Upload");
 
         menu.setMnemonic(KeyEvent.VK_A);
         menubar.add(menu);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, ActionEvent.CTRL_MASK));
-        menu.add(menuItem);
+        refresh.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+        menu.add(refresh);
+        restart.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+        menu.add(restart);
 
         table.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("File Number");
         table.getTableHeader().getColumnModel().getColumn(1).setHeaderValue("File Name");
@@ -55,9 +57,8 @@ public class Window {
         panelTop.add(input);
         panelTop.add(BorderLayout.EAST,send);
         panelTop.add(BorderLayout.NORTH,status);
-        panelBottom.add(BorderLayout.WEST,refresh);
-        panelBottom.add(BorderLayout.CENTER, download);
-        panelBottom.add(BorderLayout.EAST,restart);
+        panelBottom.add(download);
+        panelBottom.add(BorderLayout.EAST,upload);
         
         status.setText("Welcome to Server");
         status.setEditable(false);

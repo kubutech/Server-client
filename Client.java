@@ -57,13 +57,14 @@ public class Client {
                 RemoteFile dFile;
                 try {
                     dFile = this.files.get(window.table.getSelectedRow());
-                    window.status.setText("Downloading file " + dFile.name);
                     this.downloadFile(dFile);
                     window.status.setText("Downloaded file " + dFile.name);
                 } catch (IOException e) {
                     if (e.getMessage().equals("Read timed out")) {
                         dFile = this.files.get(window.table.getSelectedRow());
                         window.status.setText("Downladed file " + dFile.name);
+                    } else {
+                        window.status.setText(e.getMessage());
                     }
                 } catch (IndexOutOfBoundsException e) {
                     window.status.setText("Select file to download!");
@@ -76,7 +77,7 @@ public class Client {
                 }
             });
 
-            window.menuItem.addActionListener(a -> {
+            window.upload.addActionListener(a -> {
                 int result = window.fc.showOpenDialog(window.frame);
 
                 if (result == JFileChooser.APPROVE_OPTION) {
@@ -144,7 +145,6 @@ public class Client {
 
         } catch (Exception e){
             this.window.status.setText("Connection with server interrupted- restart application to connect again!");
-            e.printStackTrace();
         }
 
         window.model.updateList(this.files);
@@ -210,13 +210,12 @@ public class Client {
 
         if (!error.equals("File doesnt exist")) {
             fileOut = new FileOutputStream(file.name);
-            System.out.println(reply);
             int recvSize = 0;
             while (true) {
                 Arrays.fill(recvbuf, (byte)0);
                 try {
                     recvSize = in.read(recvbuf, 0, 2048);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     System.out.println("Receive timeout!");
                     break;
                 }
