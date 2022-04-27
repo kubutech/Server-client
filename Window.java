@@ -24,7 +24,7 @@ public class Window {
     JMenuItem refresh, restart;
 
     public Window() {
-        frame = new JFrame("Server client"); 
+        frame = new JFrame("Server client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         panelTop = new JPanel(new BorderLayout());
         panelBottom = new JPanel(new BorderLayout());
@@ -46,6 +46,7 @@ public class Window {
         fc_upload.setMultiSelectionEnabled(true);
         fc_download.setApproveButtonText("Download");
         fc_download.setDialogTitle("Select file to download");
+        fc_download.setCurrentDirectory(new File("./Downloads"));
 
         menu.setMnemonic(KeyEvent.VK_A);
         menubar.add(menu);
@@ -76,8 +77,6 @@ public class Window {
         frame.add(sp);
         frame.setJMenuBar(menubar);
         frame.setVisible(true);
-
-        
     }
 
 }
@@ -123,6 +122,7 @@ class myTableModel  extends AbstractTableModel {
         
         this.files = files;
     }
+
 }
 
 

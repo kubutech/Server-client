@@ -78,23 +78,26 @@ public class Client {
             });
 
             window.upload.addActionListener(a -> {
+                window.fc_download.setMultiSelectionEnabled(true);
                 int result = window.fc_upload.showOpenDialog(window.frame);
-
                 if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = window.fc_upload.getSelectedFile();
-                    try {
-                        uploadFile(selectedFile);
-                        window.status.setText("Uploaded file " + selectedFile.getName());
-                    } catch (Exception e) {
-                        window.status.setText("Couldn't upload file " + selectedFile.getName());
+                    File[] selectedFiles = window.fc_upload.getSelectedFiles();
+                    for (File selectedFile:selectedFiles) {
+                        try {
+                            uploadFile(selectedFile);
+                            window.status.setText("Uploaded file " + selectedFile.getName());
+                        } catch (Exception e) {
+                            window.status.setText("Couldn't upload file " + selectedFile.getName());
+                        }
                     }
                 }
             });
 
             window.send.setText("Send command");
             window.input.setText("");
-            window.sp.revalidate();
-            window.sp.repaint();
+            window.table.revalidate();
+            window.table.repaint();
+
             try {
                 BufferedWriter fileOut = new BufferedWriter(new FileWriter("IPAddress.txt"));
                 fileOut.write(this.IP);
@@ -150,8 +153,8 @@ public class Client {
 
         window.model.updateList(this.files);
 
-        window.sp.revalidate();
-        window.sp.repaint();
+        window.table.revalidate();
+        window.table.repaint();
 
     }
 
@@ -260,6 +263,8 @@ public class Client {
     }
 
 }
+
+
 
 class RemoteFile {
 
