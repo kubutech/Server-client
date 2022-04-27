@@ -3,6 +3,7 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.*;
 
 
@@ -17,7 +18,7 @@ public class Window {
     JTextField input;
     JTable table;
     myTableModel model;
-    JFileChooser fc;
+    JFileChooser fc_upload, fc_download;
     JMenuBar menubar;
     JMenu menu;
     JMenuItem refresh, restart;
@@ -36,11 +37,15 @@ public class Window {
         input = new JTextField();
         model = new myTableModel();
         table = new JTable(model);
-        fc = new JFileChooser();
+        fc_upload = new JFileChooser();
+        fc_download = new JFileChooser();
         menu = new JMenu("Connection");
         menubar = new JMenuBar();
 
-        fc.setApproveButtonText("Upload");
+        fc_upload.setApproveButtonText("Upload");
+        fc_upload.setMultiSelectionEnabled(true);
+        fc_download.setApproveButtonText("Download");
+        fc_download.setDialogTitle("Select file to download");
 
         menu.setMnemonic(KeyEvent.VK_A);
         menubar.add(menu);

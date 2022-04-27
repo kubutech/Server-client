@@ -8,7 +8,7 @@ import java.util.*;
 public class Client {
     
     private Socket connectSocket;
-    private OutputStream out, uploadOut;
+    private OutputStream out;
     private FileOutputStream fileOut;
     private FileInputStream fileIn;
     private InputStream in;
@@ -78,14 +78,15 @@ public class Client {
             });
 
             window.upload.addActionListener(a -> {
-                int result = window.fc.showOpenDialog(window.frame);
+                int result = window.fc_upload.showOpenDialog(window.frame);
 
                 if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = window.fc.getSelectedFile();
+                    File selectedFile = window.fc_upload.getSelectedFile();
                     try {
                         uploadFile(selectedFile);
+                        window.status.setText("Uploaded file " + selectedFile.getName());
                     } catch (Exception e) {
-
+                        window.status.setText("Couldn't upload file " + selectedFile.getName());
                     }
                 }
             });
@@ -199,35 +200,40 @@ public class Client {
 
         byte[] sendbuf = ("GET " + file.name).getBytes(StandardCharsets.UTF_16LE);
         byte[] recvbuf = new byte[2048];
-        
-        out.write(sendbuf);
-        out.flush();
 
-        in.read(recvbuf);
-        String reply = new String(recvbuf,"UTF-16LE");
+        window.fc_download.setSelectedFile(new File(file.name));
+        int result = window.fc_download.showSaveDialog(window.frame);
 
-        String error = reply.substring(0,17);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            out.write(sendbuf);
+            out.flush();
 
-        if (!error.equals("File doesnt exist")) {
-            fileOut = new FileOutputStream(file.name);
-            int recvSize = 0;
-            while (true) {
-                Arrays.fill(recvbuf, (byte)0);
-                try {
-                    recvSize = in.read(recvbuf, 0, 2048);
-                } catch (IOException e) {
-                    System.out.println("Receive timeout!");
-                    break;
+            in.read(recvbuf);
+            String reply = new String(recvbuf, "UTF-16LE");
+
+            String error = reply.substring(0, 17);
+
+            if (!error.equals("File doesnt exist")) {
+                fileOut = new FileOutputStream(window.fc_download.getSelectedFile());
+                int recvSize = 0;
+                while (true) {
+                    Arrays.fill(recvbuf, (byte) 0);
+                    try {
+                        recvSize = in.read(recvbuf, 0, 2048);
+                    } catch (IOException e) {
+                        System.out.println("Receive timeout!");
+                        break;
+                    }
+                    if (recvSize == 0 || recvSize == 1 || recvSize == -1) {
+                        break;
+                    }
+                    fileOut.write(recvbuf, 0, recvSize);
+                    fileOut.flush();
                 }
-                if (recvSize == 0 || recvSize == 1 || recvSize == -1) {
-                    break;
-                }
-                fileOut.write(recvbuf, 0, recvSize);
-                fileOut.flush();
+                fileOut.close();
+            } else {
+                throw new IOException("File not available on server");
             }
-            fileOut.close();
-        } else {
-            throw new IOException("File not available on server");
         }
 
     }
