@@ -1,3 +1,4 @@
+package kubutech.javaProjects.serverClient;
 
 public class Main {
 
