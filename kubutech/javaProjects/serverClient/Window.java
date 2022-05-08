@@ -85,6 +85,7 @@ public class Window {
         login.setSize(400,100);
         login.setLocationRelativeTo(null);
         login.setVisible(true);
+        login.getRootPane().setDefaultButton(sendLogin);
 
         connectStatus.setEditable(false);
 
